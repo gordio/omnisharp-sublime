@@ -70,7 +70,14 @@ def current_solution_or_project_json_folder(view):
             solution_file_path = os.path.abspath(solution_file_path)
             return solution_file_path
     else:
-        parentpath = sublime.active_window().folders()[0] #assume parent folder is opened that contains all project folders eg/Web,ClassLib,Tests
+        try:
+            parentpath = sublime.active_window().folders()[0] #assume parent folder is opened that contains all project folders eg/Web,ClassLib,Tests
+        except Exception:
+            try:
+                parentpath = os.path.dirname(sublime.active_window().active_view().file_name())
+            except Exception:
+                print("New file don't saved. Can't find path.")
+                return None
 
         for root, dirnames, filenames in os.walk(parentpath):
           if 'bin' not in root or 'obj' not in root:
@@ -85,7 +92,7 @@ def current_solution_or_project_json_folder(view):
 
 def current_solution_or_vnext_folder(view):
     project_file = project_file_name(view)
-    
+
     if project_file is not None:
         project_dir = os.path.dirname(project_file)
         return project_dir
